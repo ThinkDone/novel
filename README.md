@@ -18,6 +18,6 @@ git clone git@github.com:ThinkDone/novel.git
 ```
   * Go to the project’s top level directory and run:
 ```shell
-scrapy crawl common
+scrapy crawl common -a url=http://biqugex.com/book_26796/11560883.html
 ```
 

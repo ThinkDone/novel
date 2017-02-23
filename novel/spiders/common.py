@@ -7,7 +7,11 @@ from novel.items import NovelItem
 
 class CommonSpider(scrapy.Spider):
     name = "common"
-    start_urls = ['http://biqugex.com/book_26796/11560883.html']
+
+    def __init__(self, url, *args, **kwargs):
+        # Note super() only works for new-style classes.
+        super(CommonSpider, self).__init__(*args, **kwargs)
+        self.start_urls = [url]
 
     def parse(self, response):
         chapter_name = response.css('#box_con > div.bookname > h1::text').extract_first().encode(response.encoding)
