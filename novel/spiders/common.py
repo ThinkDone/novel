@@ -14,18 +14,18 @@ class CommonSpider(scrapy.Spider):
         self.start_urls = [url]
 
     def parse(self, response):
-        chapter_name = response.css('#box_con > div.bookname > h1::text').extract_first().encode(response.encoding)
+        encoding = response.encoding
+
+        chapter_name = response.xpath('//h1//text()').extract_first().encode(encoding, 'ignore')
 
         with open(chapter_name + '.txt', 'w') as f:
-            f.write(chapter_name)
-            f.write('\n')
-            f.write('{0}\n\n'.format(response.url))
-            for line in response.css('#content ::text').extract():
-                f.write(line.encode(response.encoding))
-        next_chapter_path = response.xpath('//*[@id="box_con"]/div[5]/a[4]/@href').extract_first()
+            f.write('{0}\n{1}\n\n'.format(chapter_name, response.url))
+            content = '\n'.join(response.css('#content').xpath('.//text()').extract())
+            f.write(content.encode(encoding, 'ignore'))
 
-        # the latest chapter
-        if next_chapter_path == '/book_26796/':
+        # Avoid using contains(.//text(), 'search text')
+        next_chapter_path = response.xpath(u'//a[contains(., "下一章")]/@href').extract_first()
+        if next_chapter_path == '' or next_chapter_path == 'index.html':
             return
 
         next_chapter_url = response.urljoin(next_chapter_path)
